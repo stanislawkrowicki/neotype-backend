@@ -8,10 +8,11 @@ import (
 )
 
 const (
-	envKey = "ENVIRONMENT"
-	configFolder = "config"
+	envKey             = "ENVIRONMENT"
+	configFolder       = "config"
 	defaultEnvironment = "local"
 )
+
 func Get(pkg, key string) (string, error) {
 	configType, exists := os.LookupEnv(envKey)
 	if !exists {
@@ -26,7 +27,8 @@ func Get(pkg, key string) (string, error) {
 	}
 
 	data := make(map[string]string)
-	err = yaml.Unmarshal(file, &data); if err != nil {
+	err = yaml.Unmarshal(file, &data)
+	if err != nil {
 		return "", err
 	}
 

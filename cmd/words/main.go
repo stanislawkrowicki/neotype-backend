@@ -17,7 +17,8 @@ func main() {
 		panic(err)
 	}
 
-	err = router.Run(fmt.Sprintf(":%s", port)); if err != nil {
+	err = router.Run(fmt.Sprintf(":%s", port))
+	if err != nil {
 		panic(err)
 	}
 }
