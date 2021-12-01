@@ -36,3 +36,20 @@ func Get(pkg, key string) (string, error) {
 		return "", err
 	}
 }
+
+func GetBaseURL(pkg string) (string, error) {
+	baseURL, err := Get(pkg, "base")
+	if err != nil {
+		return "", err
+	}
+
+	if baseURL == "http://localhost" {
+		port, err := Get(pkg, "port")
+		if err != nil {
+			return "", err
+		}
+		baseURL += ":" + port
+	}
+
+	return baseURL, nil
+}
