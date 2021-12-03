@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -18,7 +19,14 @@ func GetRandomWords(c *gin.Context) {
 		return
 	}
 
-	jsonFile, err := os.Open("pkg/words/words.json")
+	mainPath, _ := os.Getwd()
+	var jsonFile *os.File
+	if !strings.Contains(mainPath, "tests") {
+		jsonFile, err = os.Open(mainPath + "pkg/words/words.json")
+	} else {
+		jsonFile, err = os.Open(mainPath + "/../../pkg/words/words.json")
+	}
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, nil)
 		return
