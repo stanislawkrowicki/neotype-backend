@@ -18,27 +18,27 @@ func TestGetRandomWords(t *testing.T) {
 	for _, num := range goodNumbers {
 		request, _ := http.NewRequest("GET", fmt.Sprintf("/words/%d", num), nil)
 		response := httptest.NewRecorder()
-		Router().ServeHTTP(response, request)
+		router().ServeHTTP(response, request)
 		assert.Equal(t, 200, response.Code, "200 OK was expected for proper numbers")
 	}
 
 	for _, num := range badNumbers {
 		request, _ := http.NewRequest("GET", fmt.Sprintf("/words/%d", num), nil)
 		response := httptest.NewRecorder()
-		Router().ServeHTTP(response, request)
+		router().ServeHTTP(response, request)
 		assert.Equal(t, 400, response.Code, "400 Bad Request was expected for bad number.")
 	}
 
 	for _, num := range notNumbers {
 		request, _ := http.NewRequest("GET", fmt.Sprintf("/words/%s", num), nil)
 		response := httptest.NewRecorder()
-		Router().ServeHTTP(response, request)
+		router().ServeHTTP(response, request)
 		assert.Equal(t, 400, response.Code, "400 Bad Request was expected for not numbers.")
 	}
 }
 
-func Router() *gin.Engine {
-	router := gin.New()
-	router.GET("/words/:count", words.GetRandomWords)
-	return router
+func router() *gin.Engine {
+	r := gin.New()
+	r.GET("/words/:count", words.GetRandomWords)
+	return r
 }
