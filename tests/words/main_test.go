@@ -12,7 +12,6 @@ import (
 
 func TestGetRandomWords(t *testing.T) {
 	var goodNumbers = [...]int{12, 36, 100, 999}
-	var goodNumbersString = [...]string{"12", "36", "100", "999"}
 	var badNumbers = [...]int{0, -2, -15, -999}
 	var notNumbers = [...]string{"jade", "10f", "9asf", "-30", "10.2", "10,2"}
 
@@ -21,13 +20,6 @@ func TestGetRandomWords(t *testing.T) {
 		response := httptest.NewRecorder()
 		Router().ServeHTTP(response, request)
 		assert.Equal(t, 200, response.Code, "200 OK was expected for proper numbers")
-	}
-
-	for _, num := range goodNumbersString {
-		request, _ := http.NewRequest("GET", fmt.Sprintf("/words/%s", num), nil)
-		response := httptest.NewRecorder()
-		Router().ServeHTTP(response, request)
-		assert.Equal(t, 200, response.Code, "200 OK was expected for proper numbers strings")
 	}
 
 	for _, num := range badNumbers {
