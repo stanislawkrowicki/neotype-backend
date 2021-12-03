@@ -20,7 +20,7 @@ func GetRandomWords(c *gin.Context) {
 	}
 
 	if count <= 0 {
-		c.String(http.StatusBadRequest, "Number should be bigger than 0")
+		c.String(http.StatusBadRequest, "Number should be greater than 0")
 		return
 	}
 
