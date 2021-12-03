@@ -13,7 +13,7 @@ import (
 func TestGetRandomWords(t *testing.T) {
 	var goodNumbers = [...]int{12, 36, 100, 999}
 	var badNumbers = [...]int{0, -2, -15, -999}
-	var notNumbers = [...]string{"jade", "10f", "9asf", "-30", "10.2", "10,2"}
+	var notNumbers = [...]string{"jade", "10f", "9asf", "_", "10.2", "10,2"}
 
 	for _, num := range goodNumbers {
 		request, _ := http.NewRequest("GET", fmt.Sprintf("/words/%d", num), nil)
