@@ -15,7 +15,12 @@ import (
 func GetRandomWords(c *gin.Context) {
 	count, err := strconv.Atoi(c.Param("count"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, nil)
+		c.String(http.StatusBadRequest, "Not a number")
+		return
+	}
+
+	if count <= 0 {
+		c.String(http.StatusBadRequest, "Number should be bigger than 0")
 		return
 	}
 
