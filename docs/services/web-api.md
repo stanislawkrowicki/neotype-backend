@@ -2,4 +2,4 @@
 
 > **GET /words/{number}**
 >
-> Redirects to [words-api/words/](./words.MD)
+> Redirects to [words-api/words/](./words.md)
