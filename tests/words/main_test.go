@@ -1,0 +1,52 @@
+package main
+
+import (
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+	"neotype-backend/pkg/words"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+)
+
+func TestGetRandomWords(t *testing.T) {
+	var goodNumbers = [...]int{12, 36, 100, 999}
+	var goodNumbersString = [...]string{"12", "36", "100", "999"}
+	var badNumbers = [...]int{0, -2, -15, -999}
+	var notNumbers = [...]string{"jade", "10f", "9asf", "-30", "10.2", "10,2"}
+
+	for _, num := range goodNumbers {
+		request, _ := http.NewRequest("GET", fmt.Sprintf("/words/%d", num), nil)
+		response := httptest.NewRecorder()
+		Router().ServeHTTP(response, request)
+		assert.Equal(t, 200, response.Code, "200 OK was expected for proper numbers")
+	}
+
+	for _, num := range goodNumbersString {
+		request, _ := http.NewRequest("GET", fmt.Sprintf("/words/%s", num), nil)
+		response := httptest.NewRecorder()
+		Router().ServeHTTP(response, request)
+		assert.Equal(t, 200, response.Code, "200 OK was expected for proper numbers strings")
+	}
+
+	for _, num := range badNumbers {
+		request, _ := http.NewRequest("GET", fmt.Sprintf("/words/%d", num), nil)
+		response := httptest.NewRecorder()
+		Router().ServeHTTP(response, request)
+		assert.Equal(t, 400, response.Code, "400 Bad Request was expected for bad number.")
+	}
+
+	for _, num := range notNumbers {
+		request, _ := http.NewRequest("GET", fmt.Sprintf("/words/%s", num), nil)
+		response := httptest.NewRecorder()
+		Router().ServeHTTP(response, request)
+		assert.Equal(t, 400, response.Code, "400 Bad Request was expected for not numbers.")
+	}
+}
+
+func Router() *gin.Engine {
+	router := gin.New()
+	router.GET("/words/:count", words.GetRandomWords)
+	return router
+}

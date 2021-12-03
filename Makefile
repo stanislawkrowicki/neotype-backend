@@ -15,3 +15,8 @@ web-api-debug:
 words-debug:
 	go build -gcflags="all=-N -l" -o ./bin/words ./cmd/words/main.go
 	dlv --listen=localhost:40000 --headless=true --api-version=2 --only-same-user=false exec ./bin/words
+
+#TESTS
+test:
+	go test ./tests/*
+	
