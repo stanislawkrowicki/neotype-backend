@@ -6,6 +6,9 @@ web-api:
 words:
 	go run cmd/words/main.go
 
+users:
+	go run cmd/users/main.go
+
 #DEBUG
 
 web-api-debug:
