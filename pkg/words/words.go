@@ -27,7 +27,7 @@ func GetRandomWords(c *gin.Context) {
 	mainPath, _ := os.Getwd()
 	var jsonFile *os.File
 	if !strings.Contains(mainPath, "tests") {
-		jsonFile, err = os.Open(mainPath + "pkg/words/words.json")
+		jsonFile, err = os.Open(mainPath + "/pkg/words/words.json")
 	} else {
 		jsonFile, err = os.Open(mainPath + "/../../pkg/words/words.json")
 	}
