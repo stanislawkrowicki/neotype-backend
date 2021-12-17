@@ -5,7 +5,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"neotype-backend/pkg/config"
-	webapi "neotype-backend/pkg/web-api"
+	"neotype-backend/pkg/gateway"
 )
 
 func main() {
@@ -19,8 +19,9 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	router.GET("/words/:count", webapi.GetWords)
-
+	router.GET("/words/:count", func(c *gin.Context) {
+		gateway.Proxy(c, "words", fmt.Sprintf("/words/%s", c.Param("count")))
+	})
 	port, err := config.Get("web-api", "port")
 	if err != nil {
 		panic(err)
