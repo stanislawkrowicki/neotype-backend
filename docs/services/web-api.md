@@ -1,5 +1,3 @@
-## web-api is the URL that gets requested by the website.
+## web-api works as a gateway to services.
 
-> **GET /words/{number}**
->
-> Redirects to [words-api/words/](./words.md)
+All the endpoints are the same as in services.
