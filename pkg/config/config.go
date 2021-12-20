@@ -5,6 +5,7 @@ import (
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
 const (
@@ -19,7 +20,13 @@ func Get(pkg, key string) (string, error) {
 		configType = defaultEnvironment
 	}
 
-	path := fmt.Sprintf("%s/%s/config_%s.yaml", configFolder, pkg, configType)
+	mainPath, _ := os.Getwd()
+
+	path := fmt.Sprintf("%s/%s/%s/config_%s.yaml", mainPath, configFolder, pkg, configType)
+
+	if strings.Contains(mainPath, "tests") {
+		path = fmt.Sprintf("%s/../../%s/%s/config_%s.yaml", mainPath, configFolder, pkg, configType)
+	}
 
 	file, err := ioutil.ReadFile(path)
 	if err != nil {
