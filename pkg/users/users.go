@@ -1,7 +1,9 @@
 package users
 
+import "C"
 import (
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"github.com/joho/godotenv"
@@ -11,6 +13,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -19,13 +22,18 @@ type User struct {
 
 	Login              string `gorm:"unique"`
 	Password           string
+	TestsTaken         int
+	AllTimeAvg         *float32
 	LastSuccessLoginAt *string
 	LastFailedLoginAt  *string
 }
 
 const bcryptCost = bcrypt.DefaultCost
 
-var db = mysql.NewConnection()
+var (
+	db     = mysql.NewConnection()
+	jwtKey = []byte(os.Getenv("JWT_SECRET_KEY"))
+)
 
 func Init() {
 	if err := godotenv.Load(); err != nil {
@@ -101,7 +109,7 @@ func Login(c *gin.Context) {
 		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
 	})
 
-	token, err := claims.SignedString([]byte(os.Getenv("JWT_SECRET_KEY")))
+	token, err := claims.SignedString(jwtKey)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to create user session."})
 		return
@@ -111,4 +119,50 @@ func Login(c *gin.Context) {
 		"message": "Login successful.",
 		"token":   token,
 	})
+}
+
+func Data(c *gin.Context) {
+	promptedTokens, ok := c.Request.Header["Authorization"]
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "No auth selected."})
+		return
+	}
+
+	auth := promptedTokens[0]
+	parts := strings.Split(auth, " ")
+	if len(parts) != 2 || parts[0] != "Bearer" {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unsupported authorization method."})
+		return
+	}
+
+	tokenString := parts[1]
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+
+		return jwtKey, nil
+	})
+
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid token."})
+		return
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Could not get claims from token."})
+		return
+	}
+
+	var user User
+
+	result := db.Where("id = ?", claims["iss"]).First(&user)
+	if result.Error != nil {
+		// Token is checked earlier so there can't be a possibility where token has invalid user
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Could not select user from database."})
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
 }

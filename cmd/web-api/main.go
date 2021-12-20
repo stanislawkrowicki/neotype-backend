@@ -28,6 +28,9 @@ func main() {
 	router.POST("/register", func(c *gin.Context) {
 		gateway.Proxy(c, "users", "/register")
 	})
+	router.GET("/data", func(c *gin.Context) {
+		gateway.Proxy(c, "users", "/data")
+	})
 
 	port, err := config.Get("web-api", "port")
 	if err != nil {
