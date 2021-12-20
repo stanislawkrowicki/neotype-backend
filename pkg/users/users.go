@@ -20,12 +20,12 @@ import (
 type User struct {
 	gorm.Model
 
-	Login              string `gorm:"unique"`
+	Login              string `json:"login" gorm:"unique"`
 	Password           string
-	TestsTaken         int
-	AllTimeAvg         *float32
-	LastSuccessLoginAt *string
-	LastFailedLoginAt  *string
+	TestsTaken         int      `json:"tests"`
+	AllTimeAvg         *float32 `json:"avg"`
+	LastSuccessLoginAt *string  `json:"lastSuccessLoginAt"`
+	LastFailedLoginAt  *string  `json:"LastFailedLoginAt"`
 }
 
 const bcryptCost = bcrypt.DefaultCost
@@ -164,5 +164,11 @@ func Data(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, gin.H{
+		"login":              user.Login,
+		"tests":              user.TestsTaken,
+		"avg":                user.AllTimeAvg,
+		"lastSuccessLoginAt": user.LastSuccessLoginAt,
+		"lastFailedLoginAt":  user.LastFailedLoginAt,
+	})
 }
