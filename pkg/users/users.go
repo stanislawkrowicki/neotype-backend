@@ -1,6 +1,5 @@
 package users
 
-import "C"
 import (
 	"errors"
 	"fmt"
