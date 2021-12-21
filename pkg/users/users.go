@@ -22,10 +22,10 @@ type User struct {
 
 	Login              string `json:"login" gorm:"unique"`
 	Password           string
-	TestsTaken         int      `json:"tests"`
-	AllTimeAvg         *float32 `json:"avg"`
-	LastSuccessLoginAt *string  `json:"lastSuccessLoginAt"`
-	LastFailedLoginAt  *string  `json:"LastFailedLoginAt"`
+	TestsTaken         int     `json:"tests"`
+	AllTimeAvg         float32 `json:"avg"`
+	LastSuccessLoginAt *string `json:"lastSuccessLoginAt"`
+	LastFailedLoginAt  *string `json:"LastFailedLoginAt"`
 }
 
 const bcryptCost = bcrypt.DefaultCost
