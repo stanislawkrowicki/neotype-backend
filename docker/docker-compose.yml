@@ -10,3 +10,14 @@ services:
         - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     ports:
       - "${MYSQL_PORT}:3306"
+
+  rabbitmq:
+    container_name: "rabbitmq"
+    build:
+      context: ./rabbitmq
+      args:
+        - RABBITMQ_USER=${RABBITMQ_USER}
+        - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
+    ports:
+      - "${RABBITMQ_PORT}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
