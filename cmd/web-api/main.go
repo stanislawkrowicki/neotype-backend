@@ -19,9 +19,12 @@ func main() {
 		AllowCredentials: true,
 	}))
 
+	// words
 	router.GET("/words/:count", func(c *gin.Context) {
 		gateway.Proxy(c, "words", fmt.Sprintf("/words/%s", c.Param("count")))
 	})
+
+	// users
 	router.POST("/login", func(c *gin.Context) {
 		gateway.Proxy(c, "users", "/login")
 	})
@@ -31,6 +34,8 @@ func main() {
 	router.GET("/data", func(c *gin.Context) {
 		gateway.Proxy(c, "users", "/data")
 	})
+
+	// results
 	router.POST("/result", func(c *gin.Context) {
 		gateway.Proxy(c, "results", "/result")
 	})
