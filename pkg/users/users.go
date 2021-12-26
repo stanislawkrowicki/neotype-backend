@@ -35,7 +35,7 @@ var (
 )
 
 func Init() {
-	if err := godotenv.Load(); err != nil {
+	if err := godotenv.Load("docker/.env"); err != nil {
 		panic("Failed to load environment variables.")
 	}
 	if err := db.AutoMigrate(&User{}); err != nil {

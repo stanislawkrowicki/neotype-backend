@@ -21,7 +21,7 @@ const (
 )
 
 func generateDsn() string {
-	_ = godotenv.Load()
+	_ = godotenv.Load("docker/.env")
 
 	addr, err := config.Get("mysql", configAddr)
 	port, err := config.Get("mysql", configPort)
