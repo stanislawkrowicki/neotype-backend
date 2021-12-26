@@ -25,6 +25,18 @@ words-debug:
 	go build -gcflags="all=-N -l" -o ./bin/words ./cmd/words/main.go
 	dlv --listen=localhost:40000 --headless=true --api-version=2 --only-same-user=false exec ./bin/words
 
+users-debug:
+	go build -gcflags="all=-N -l" -o ./bin/users ./cmd/users/main.go
+	dlv --listen=localhost:40000 --headless=true --api-version=2 --only-same-user=false exec ./bin/users
+
+results-publisher-debug:
+	go build -gcflags="all=-N -l" -o ./bin/results-publisher ./cmd/results-publisher/main.go
+	dlv --listen=localhost:40000 --headless=true --api-version=2 --only-same-user=false exec ./bin/results-publisher
+
+results-consumer-debug:
+	go build -gcflags="all=-N -l" -o ./bin/results-consumer ./cmd/results-consumer/main.go
+	dlv --listen=localhost:40000 --headless=true --api-version=2 --only-same-user=false exec ./bin/results-consumer
+
 #TESTS
 test:
 	go test ./tests/*
