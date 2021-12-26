@@ -35,9 +35,7 @@ var (
 )
 
 func Init() {
-	if err := godotenv.Load("docker/.env"); err != nil {
-		panic("Failed to load environment variables.")
-	}
+	_ = godotenv.Load("docker/.env")
 	if err := db.AutoMigrate(&User{}); err != nil {
 		panic("Failed to migrate User struct.")
 	}
