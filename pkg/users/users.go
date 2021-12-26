@@ -121,42 +121,15 @@ func Login(c *gin.Context) {
 }
 
 func Data(c *gin.Context) {
-	promptedTokens, ok := c.Request.Header["Authorization"]
-	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "No auth selected."})
-		return
-	}
-
-	auth := promptedTokens[0]
-	parts := strings.Split(auth, " ")
-	if len(parts) != 2 || parts[0] != "Bearer" {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unsupported authorization method."})
-		return
-	}
-
-	tokenString := parts[1]
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-
-		return jwtKey, nil
-	})
-
+	userID, err := Authorize(c)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid token."})
-		return
-	}
-
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok || !token.Valid {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "Could not get claims from token."})
+		c.JSON(http.StatusUnauthorized, gin.H{"message": err})
 		return
 	}
 
 	var user User
 
-	result := db.Where("id = ?", claims["iss"]).First(&user)
+	result := db.Where("id = ?", userID).First(&user)
 	if result.Error != nil {
 		// Token is checked earlier so there can't be a possibility where token has invalid user
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Could not select user from database."})
@@ -170,4 +143,38 @@ func Data(c *gin.Context) {
 		"lastSuccessLoginAt": user.LastSuccessLoginAt,
 		"lastFailedLoginAt":  user.LastFailedLoginAt,
 	})
+}
+
+func Authorize(c *gin.Context) (interface{}, error) {
+	// TODO: change this to be an api call
+	promptedTokens, ok := c.Request.Header["Authorization"]
+	if !ok {
+		return 0, fmt.Errorf("no auth method selected")
+	}
+
+	auth := promptedTokens[0]
+	parts := strings.Split(auth, " ")
+	if len(parts) != 2 || parts[0] != "Bearer" {
+		return 0, fmt.Errorf("unsupported auth method")
+	}
+
+	tokenString := parts[1]
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+
+		return jwtKey, nil
+	})
+
+	if err != nil {
+		return 0, fmt.Errorf("invalid token")
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return 0, fmt.Errorf("failed to get claims")
+	}
+
+	return claims["iss"], nil
 }
