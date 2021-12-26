@@ -9,6 +9,12 @@ words:
 users:
 	go run cmd/users/main.go
 
+results-publisher:
+	go run cmd/results-publisher/main.go
+
+results-consumer:
+	go run cmd/results-consumer/main.go
+
 #DEBUG
 
 web-api-debug:
