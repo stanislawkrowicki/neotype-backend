@@ -9,6 +9,7 @@ import (
 	"neotype-backend/pkg/rabbitmq"
 	"neotype-backend/pkg/users"
 	"net/http"
+	"strconv"
 )
 
 type QueueObject struct {
@@ -70,6 +71,19 @@ func QueueResult(c *gin.Context) {
 }
 
 func FetchResults(c *gin.Context) {
+	const (
+		defaultLimit = 10
+		minLimit     = 1
+		maxLimit     = 50
+	)
+
+	limit := defaultLimit
+
+	limitInt, err := strconv.Atoi(c.Param("count"))
+	if err == nil && limitInt <= maxLimit && limitInt >= minLimit {
+		limit = limitInt
+	}
+
 	userID, err := users.Authorize(c)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
@@ -77,7 +91,7 @@ func FetchResults(c *gin.Context) {
 	}
 
 	var results []Result
-	db.Limit(10).Order("id desc").Find(&results, "user = ?", userID)
+	db.Limit(limit).Order("id desc").Find(&results, "user = ?", userID)
 
 	c.JSON(http.StatusOK, results)
 }

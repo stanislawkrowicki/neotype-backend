@@ -39,8 +39,8 @@ func main() {
 	router.POST("/result", func(c *gin.Context) {
 		gateway.Proxy(c, "results", "/result")
 	})
-	router.GET("/results", func(c *gin.Context) {
-		gateway.Proxy(c, "results", "/results")
+	router.GET("/results/:count", func(c *gin.Context) {
+		gateway.Proxy(c, "results", fmt.Sprintf("/results/%s", c.Param("count")))
 	})
 
 	port, err := config.Get("web-api", "port")
