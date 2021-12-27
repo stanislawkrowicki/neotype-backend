@@ -12,6 +12,36 @@ import (
 	"time"
 )
 
+var wordsArr []string
+
+func loadWords() error {
+	mainPath, _ := os.Getwd()
+	var jsonFile *os.File
+	var err error
+	if !strings.Contains(mainPath, "tests") {
+		jsonFile, err = os.Open(mainPath + "/pkg/words/words.json")
+	} else {
+		jsonFile, err = os.Open(mainPath + "/../../pkg/words/words.json")
+	}
+
+	if err != nil {
+		return err
+	}
+
+	defer func(jsonFile *os.File) {
+		_ = jsonFile.Close()
+	}(jsonFile)
+
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	err = json.Unmarshal(byteValue, &wordsArr)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func GetRandomWords(c *gin.Context) {
 	count, err := strconv.Atoi(c.Param("count"))
 	if err != nil {
@@ -24,40 +54,20 @@ func GetRandomWords(c *gin.Context) {
 		return
 	}
 
-	mainPath, _ := os.Getwd()
-	var jsonFile *os.File
-	if !strings.Contains(mainPath, "tests") {
-		jsonFile, err = os.Open(mainPath + "/pkg/words/words.json")
-	} else {
-		jsonFile, err = os.Open(mainPath + "/../../pkg/words/words.json")
+	if len(wordsArr) == 0 {
+		if err := loadWords(); err != nil {
+			c.JSON(http.StatusInternalServerError, "Failed to load words")
+		}
 	}
 
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, nil)
-		return
-	}
-
-	defer func(jsonFile *os.File) {
-		_ = jsonFile.Close()
-	}(jsonFile)
-
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-
-	var allWords []string
 	var selectedWords []string
-
-	err = json.Unmarshal(byteValue, &allWords)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, nil)
-		return
-	}
 
 	randomizerSource := rand.NewSource(time.Now().UnixNano())
 	randomizer := rand.New(randomizerSource)
 
 	for i := 0; i < count; i++ {
-		index := randomizer.Intn(len(allWords))
-		selectedWords = append(selectedWords, allWords[index])
+		index := randomizer.Intn(len(wordsArr))
+		selectedWords = append(selectedWords, wordsArr[index])
 	}
 
 	c.JSON(http.StatusOK, selectedWords)
