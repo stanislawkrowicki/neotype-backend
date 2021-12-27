@@ -19,8 +19,8 @@ import (
 type User struct {
 	gorm.Model
 
-	Login              string `json:"login" gorm:"unique"`
-	Password           string
+	Login              string  `json:"login" gorm:"unique"`
+	Password           string  `json:"-"`
 	TestsTaken         int     `json:"tests"`
 	AllTimeAvg         float32 `json:"avg"`
 	LastSuccessLoginAt *string `json:"lastSuccessLoginAt"`
