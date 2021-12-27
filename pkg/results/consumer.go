@@ -5,6 +5,7 @@ import (
 	"gorm.io/datatypes"
 	"log"
 	"neotype-backend/pkg/mysql"
+	"neotype-backend/pkg/users"
 	"strconv"
 	"time"
 )
@@ -62,4 +63,10 @@ func ConsumeResult(body []byte) {
 	if resp.Error != nil {
 		log.Printf("Failed to add the result to the database! %s", resp.Error)
 	}
+
+	var user users.User
+	db.First(&user, "id = ?", userID)
+	user.TestsTaken++
+	user.AllTimeAvg = ((user.AllTimeAvg * float32(user.TestsTaken-1)) + result.WPM) / float32(user.TestsTaken)
+	db.Save(&user)
 }
