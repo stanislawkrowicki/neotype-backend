@@ -31,9 +31,10 @@ require (
 	github.com/ugorji/go/codec v1.2.6 // indirect
 	golang.org/x/crypto v0.0.0-20211209193657-4570a0811e8b // indirect
 	golang.org/x/sys v0.0.0-20210806184541-e5e7981a1069 // indirect
-	golang.org/x/text v0.3.6 // indirect
+	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/yaml.v2 v2.2.8 // indirect
+	gorm.io/datatypes v1.0.4 // indirect
 	gorm.io/driver/mysql v1.2.1 // indirect
 	gorm.io/gorm v1.22.4 // indirect
 )

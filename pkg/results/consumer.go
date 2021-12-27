@@ -2,18 +2,18 @@ package results
 
 import (
 	"encoding/json"
-	"gorm.io/gorm"
+	"gorm.io/datatypes"
 	"log"
 	"neotype-backend/pkg/mysql"
 	"strconv"
+	"time"
 )
 
 type Result struct {
-	gorm.Model
-
-	User int     `json:"user"`
-	WPM  float32 `json:"wpm"`
-	Time int     `json:"time"`
+	User      int            `json:"user"`
+	WPM       float32        `json:"wpm"`
+	Time      int            `json:"time"`
+	CreatedAt datatypes.Date `json:"date"`
 }
 
 var db = mysql.NewConnection()
@@ -55,6 +55,7 @@ func ConsumeResult(body []byte) {
 	}
 
 	result.User = userID
+	result.CreatedAt = datatypes.Date(time.Now())
 
 	resp := db.Create(&result)
 	if resp.Error != nil {
