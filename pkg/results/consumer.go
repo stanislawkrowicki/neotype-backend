@@ -10,6 +10,7 @@ import (
 )
 
 type Result struct {
+	ID        int            `json:"id" gorm:"primary_key;auto_increment;not_null"`
 	User      int            `json:"user"`
 	WPM       float32        `json:"wpm"`
 	Time      int            `json:"time"`
