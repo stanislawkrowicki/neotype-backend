@@ -45,18 +45,18 @@ func loadWords() error {
 func GetRandomWords(c *gin.Context) {
 	count, err := strconv.Atoi(c.Param("count"))
 	if err != nil {
-		c.String(http.StatusBadRequest, "Not a number")
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Not a number"})
 		return
 	}
 
 	if count <= 0 {
-		c.String(http.StatusBadRequest, "Number should be greater than 0")
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Number should be greater than 0"})
 		return
 	}
 
 	if len(wordsArr) == 0 {
 		if err := loadWords(); err != nil {
-			c.JSON(http.StatusInternalServerError, "Failed to load words")
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to load words"})
 		}
 	}
 
