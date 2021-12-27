@@ -140,6 +140,7 @@ func Data(c *gin.Context) {
 		"avg":                user.AllTimeAvg,
 		"lastSuccessLoginAt": user.LastSuccessLoginAt,
 		"lastFailedLoginAt":  user.LastFailedLoginAt,
+		"createdAt":          user.CreatedAt,
 	})
 }
 
