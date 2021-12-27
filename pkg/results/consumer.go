@@ -13,6 +13,7 @@ type Result struct {
 
 	User int     `json:"user"`
 	WPM  float32 `json:"wpm"`
+	Time int     `json:"time"`
 }
 
 var db = mysql.NewConnection()

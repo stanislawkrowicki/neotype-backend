@@ -13,6 +13,7 @@ func main() {
 	router := gin.Default()
 
 	router.POST("/result", results.QueueResult)
+	router.GET("/results", results.FetchResults)
 
 	port, err := config.Get("results", "port")
 	if err != nil {

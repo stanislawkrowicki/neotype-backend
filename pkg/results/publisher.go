@@ -68,3 +68,16 @@ func QueueResult(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully added result to the queue."})
 }
+
+func FetchResults(c *gin.Context) {
+	userID, err := users.Authorize(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
+		return
+	}
+
+	var results []Result
+	db.Limit(10).Order("id desc").Find(&results, "user = ?", userID)
+
+	c.JSON(http.StatusOK, results)
+}

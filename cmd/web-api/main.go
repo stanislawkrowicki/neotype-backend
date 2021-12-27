@@ -39,6 +39,9 @@ func main() {
 	router.POST("/result", func(c *gin.Context) {
 		gateway.Proxy(c, "results", "/result")
 	})
+	router.GET("/results", func(c *gin.Context) {
+		gateway.Proxy(c, "results", "/results")
+	})
 
 	port, err := config.Get("web-api", "port")
 	if err != nil {
