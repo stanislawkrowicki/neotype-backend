@@ -14,6 +14,7 @@ type Result struct {
 	ID        int            `json:"id" gorm:"primary_key;auto_increment;not_null"`
 	User      int            `json:"user"`
 	WPM       float32        `json:"wpm"`
+	Accuracy  float32        `json:"accuracy"`
 	Time      int            `json:"time"`
 	CreatedAt datatypes.Date `json:"date"`
 }
