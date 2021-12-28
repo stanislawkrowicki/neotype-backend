@@ -144,6 +144,24 @@ func Data(c *gin.Context) {
 	})
 }
 
+func Username(c *gin.Context) {
+	userID, err := Authorize(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
+		return
+	}
+
+	var user User
+
+	result := db.First(&user, "id = ?", userID)
+	if result.RowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"message": "User not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"username": user.Login})
+}
+
 func Authorize(c *gin.Context) (interface{}, error) {
 	// TODO: change this to be an api call
 	promptedTokens, ok := c.Request.Header["Authorization"]

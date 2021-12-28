@@ -15,6 +15,7 @@ func main() {
 	router.POST("/register", users.Register)
 	router.POST("/login", users.Login)
 	router.GET("/data", users.Data)
+	router.GET("/username", users.Username)
 
 	port, err := config.Get("users", "port")
 	if err != nil {

@@ -34,6 +34,9 @@ func main() {
 	router.GET("/data", func(c *gin.Context) {
 		gateway.Proxy(c, "users", "/data")
 	})
+	router.GET("/username", func(c *gin.Context) {
+		gateway.Proxy(c, "users", "/username")
+	})
 
 	// results
 	router.POST("/result", func(c *gin.Context) {
