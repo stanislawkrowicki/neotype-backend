@@ -20,7 +20,7 @@ type User struct {
 	gorm.Model
 
 	Login              string  `json:"login" gorm:"unique"`
-	Password           string  `json:"-"`
+	Password           string  `json:"password"`
 	TestsTaken         int     `json:"tests"`
 	AllTimeAvg         float32 `json:"avg"`
 	LastSuccessLoginAt *string `json:"lastSuccessLoginAt"`
