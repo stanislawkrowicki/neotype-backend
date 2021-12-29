@@ -22,3 +22,10 @@ services:
     ports:
       - "${RABBITMQ_PORT}:5672"
       - "${RABBITMQ_MANAGEMENT_PORT}:15672"
+
+  redis:
+    container_name: "redis"
+    build:
+      context: ./redis
+    ports:
+      - "${REDIS_PORT}:6379"
