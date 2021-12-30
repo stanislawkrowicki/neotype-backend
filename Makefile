@@ -15,6 +15,9 @@ results-publisher:
 results-consumer:
 	go run cmd/results-consumer/main.go
 
+leaderboards:
+	go run cmd/leaderboards/main.go
+
 #DEBUG
 
 web-api-debug:
@@ -36,6 +39,10 @@ results-publisher-debug:
 results-consumer-debug:
 	go build -gcflags="all=-N -l" -o ./bin/results-consumer ./cmd/results-consumer/main.go
 	dlv --listen=localhost:40000 --headless=true --api-version=2 --only-same-user=false exec ./bin/results-consumer
+
+leaderboards-debug:
+	go build -gcflags="all=-N -l" -o ./bin/leaderboards ./cmd/leaderboards/main.go
+	dlv --listen=localhost:40000 --headless=true --api-version=2 --only-same-user=false exec ./bin/leaderboards
 
 #TESTS
 test:

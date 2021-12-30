@@ -1,11 +1,14 @@
 package results
 
 import (
+	"bytes"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/streadway/amqp"
+	"io"
 	"io/ioutil"
 	"log"
+	"neotype-backend/pkg/config"
 	"neotype-backend/pkg/rabbitmq"
 	"neotype-backend/pkg/users"
 	"net/http"
@@ -68,6 +71,8 @@ func QueueResult(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully added result to the queue."})
+
+	callLeaderboards(c, jsonData)
 }
 
 func FetchResults(c *gin.Context) {
@@ -94,4 +99,38 @@ func FetchResults(c *gin.Context) {
 	db.Limit(limit).Order("id desc").Find(&results, "user = ?", userID)
 
 	c.JSON(http.StatusOK, results)
+}
+
+func callLeaderboards(c *gin.Context, body []byte) {
+	serviceURI, err := config.GetBaseURL("leaderboards")
+	if err != nil {
+		log.Println("Could not get leaderboards URI!")
+		return
+	}
+
+	client := &http.Client{}
+
+	req, err := http.NewRequest("POST", serviceURI+"/leaderboards", bytes.NewBuffer(body))
+	if err != nil {
+		log.Printf("Failed to create new http request to leaderboards: %s", err)
+		return
+	}
+
+	auth, ok := c.Request.Header["Authorization"]
+	if !ok {
+		return
+	}
+
+	req.Header.Set("User-Agent", "results service")
+	req.Header.Set("Authorization", auth[0])
+
+	response, err := client.Do(req)
+	if err != nil {
+		log.Printf("Got error while calling leaderboards. Is the service dead?")
+		return
+	}
+
+	defer func(Body io.ReadCloser) {
+		_ = Body.Close()
+	}(response.Body)
 }

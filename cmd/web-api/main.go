@@ -46,6 +46,10 @@ func main() {
 		gateway.Proxy(c, "results", fmt.Sprintf("/results/%s", c.Param("count")))
 	})
 
+	// leaderboards
+	router.GET("/leaderboards/:count", func(c *gin.Context) {
+		gateway.Proxy(c, "leaderboards", fmt.Sprintf("/leaderboards/%s", c.Param("count")))
+	})
 	port, err := config.Get("web-api", "port")
 	if err != nil {
 		panic(err)
