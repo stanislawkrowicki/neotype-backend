@@ -31,6 +31,7 @@ func Entry(c *gin.Context) {
 
 	err := c.ShouldBindJSON(&result)
 	if err != nil {
+		fmt.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"message": err})
 		return
 	}
