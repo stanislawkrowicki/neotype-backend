@@ -78,7 +78,7 @@ func Entry(c *gin.Context) {
 
 	leaderKey := fmt.Sprintf("%s:%s", redisLeaderKey, userID)
 	rdb.HSet(ctx, leaderKey,
-		"accuracy", result.Accuracy, "username", user.Login)
+		"accuracy", result.Accuracy, "username", user.Login, "time", result.Time)
 	rdb.Expire(ctx, leaderKey, redisListExpiration)
 
 	c.JSON(http.StatusOK, gin.H{})
@@ -110,6 +110,7 @@ func Leaders(c *gin.Context) {
 			"username": hash["username"],
 			"wpm":      leader.Score,
 			"accuracy": hash["accuracy"],
+			"time":     hash["time"],
 		})
 	}
 
