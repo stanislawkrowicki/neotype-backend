@@ -1,4 +1,4 @@
-SERVICES="web-api words"
+SERVICES="web-api words users results-publisher results-consumer leaderboards"
 
 echo "Deploying ${SERVICES}"
 
