@@ -15,7 +15,7 @@ func main() {
 	router.POST("/result", results.QueueResult)
 	router.GET("/results/:count", results.FetchResults)
 
-	port, err := config.Get("results", "port")
+	port, err := config.GetPort("results")
 	if err != nil {
 		panic(err)
 	}

@@ -13,7 +13,7 @@ func main() {
 	router.POST("/leaderboards", leaderboards.Entry)
 	router.GET("/leaderboards/:count", leaderboards.Leaders)
 
-	port, err := config.Get("leaderboards", "port")
+	port, err := config.GetPort("leaderboards")
 	if err != nil {
 		panic(err)
 	}
