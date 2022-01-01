@@ -55,6 +55,16 @@ func Register(c *gin.Context) {
 		return
 	}
 
+	if len(promptedUser.Login) < 4 || len(promptedUser.Login) > 16 {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Username should be between 4 and 16 characters"})
+		return
+	}
+
+	if len(promptedUser.Password) < 8 || len(promptedUser.Login) > 32 {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Username should be between 8 and 32 characters"})
+		return
+	}
+
 	selected := db.Where("login = ?", promptedUser.Login).First(&User{})
 	if selected.RowsAffected != 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "User already exists."})
