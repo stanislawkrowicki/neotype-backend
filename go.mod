@@ -1,6 +1,9 @@
 module neotype-backend
 
+// +heroku goVersion go1.17
 go 1.17
+
+// +heroku install ./cmd/...
 
 require (
 	github.com/gin-gonic/gin v1.7.7
