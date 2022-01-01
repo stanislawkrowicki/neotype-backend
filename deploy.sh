@@ -1,4 +1,9 @@
-SERVICES="web-api words users results-publisher results-consumer leaderboards"
+if [ ! "$target" ]
+then
+  SERVICES="web-api words users results-publisher results-consumer leaderboards"
+else
+  SERVICES=$target
+fi
 
 echo "Getting ready to deploy ${SERVICES}"
 

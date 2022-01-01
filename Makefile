@@ -49,5 +49,6 @@ test:
 	go test ./tests/*
 
 #DEPLOYMENT
+#Usage: make deploy target="service1 service2 service3" or make deploy to deploy all at once
 deploy:
-	sh ./deploy.sh
+	target=$(target) sh ./deploy.sh
