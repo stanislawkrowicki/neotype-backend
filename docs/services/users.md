@@ -62,3 +62,17 @@
 > >  - message: user was not found
 > > - 200 OK:
 > >  - JSON object with username key
+
+> **GET /authorize/{token}**
+>
+> > **Request parameters:**
+> >
+> > - token: JWT token
+>
+> > **Returns:**
+> > - 401 Unauthorized
+> > - 400 Bad Request
+> > - 500 Internal Server Error
+> > - 200 OK
+> >  - message
+> >  - iss: user ID
