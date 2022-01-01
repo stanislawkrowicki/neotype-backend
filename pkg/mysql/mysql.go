@@ -10,19 +10,27 @@ import (
 )
 
 const (
-	envDatabase = "MYSQL_DATABASE"
-	envUser     = "MYSQL_USER"
-	envPassword = "MYSQL_PASSWORD"
-	configAddr  = "addr"
-	configPort  = "port"
-	charset     = "utf8mb4"
-	parseTime   = true
-	locale      = "Local"
+	envDatabase     = "MYSQL_DATABASE"
+	envUser         = "MYSQL_USER"
+	envPassword     = "MYSQL_PASSWORD"
+	envProdMySQLURL = "MYSQL_URL"
+	configAddr      = "addr"
+	configPort      = "port"
+	charset         = "utf8mb4"
+	parseTime       = true
+	locale          = "Local"
 )
 
 func generateDsn() string {
 	_ = godotenv.Load("docker/.env")
 
+	// Production mode
+	mysqlURL, exists := os.LookupEnv(envProdMySQLURL)
+	if exists {
+		return mysqlURL
+	}
+
+	// Local development mode
 	addr, err := config.Get("mysql", configAddr)
 	port, err := config.Get("mysql", configPort)
 	database := os.Getenv(envDatabase)

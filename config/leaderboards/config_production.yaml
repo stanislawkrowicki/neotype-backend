@@ -1,2 +1,2 @@
-base: "http://localhost"
+base: https://leaderboards-neotype.herokuapp.com
 port: 5030

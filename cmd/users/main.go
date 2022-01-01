@@ -17,7 +17,7 @@ func main() {
 	router.GET("/data", users.Data)
 	router.GET("/username", users.Username)
 
-	port, err := config.Get("users", "port")
+	port, err := config.GetPort("users")
 	if err != nil {
 		panic(err)
 	}

@@ -1,2 +1,2 @@
-base: "http://localhost"
+base: https://users-neotype.herokuapp.com
 port: 5010

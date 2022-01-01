@@ -47,4 +47,8 @@ leaderboards-debug:
 #TESTS
 test:
 	go test ./tests/*
-	
+
+#DEPLOYMENT
+#Usage: make deploy target="service1 service2 service3" or make deploy to deploy all at once
+deploy:
+	target=$(target) sh ./deploy.sh

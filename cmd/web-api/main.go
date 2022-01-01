@@ -12,8 +12,8 @@ func main() {
 	router := gin.Default()
 
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000", "http://127.0.0.1:3000"},
-		AllowMethods:     []string{"GET", "POST", "UPDATE"},
+		AllowOrigins:     []string{"http://localhost:3000", "http://127.0.0.1:3000", "https://neotype.herokuapp.com"},
+		AllowMethods:     []string{"GET", "POST"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
@@ -50,7 +50,7 @@ func main() {
 	router.GET("/leaderboards/:count", func(c *gin.Context) {
 		gateway.Proxy(c, "leaderboards", fmt.Sprintf("/leaderboards/%s", c.Param("count")))
 	})
-	port, err := config.Get("web-api", "port")
+	port, err := config.GetPort("web-api")
 	if err != nil {
 		panic(err)
 	}
