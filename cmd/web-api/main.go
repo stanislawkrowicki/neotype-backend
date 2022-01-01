@@ -13,7 +13,7 @@ func main() {
 
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000", "http://127.0.0.1:3000", "https://neotype.herokuapp.com"},
-		AllowMethods:     []string{"GET", "POST", "UPDATE"},
+		AllowMethods:     []string{"GET", "POST"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
