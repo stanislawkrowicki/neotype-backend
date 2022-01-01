@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/streadway/amqp"
 	"io"
-	"io/ioutil"
 	"log"
 	"neotype-backend/pkg/config"
 	"neotype-backend/pkg/rabbitmq"
@@ -14,11 +13,6 @@ import (
 	"net/http"
 	"strconv"
 )
-
-type QueueObject struct {
-	User interface{} `json:"user"`
-	Body []byte      `json:"result"`
-}
 
 const queueName = "results"
 
@@ -35,10 +29,16 @@ func InitPublisher() {
 }
 
 func QueueResult(c *gin.Context) {
-	// TODO: some validation
-	jsonData, err := ioutil.ReadAll(c.Request.Body)
+	var result Result
+
+	err := c.ShouldBindJSON(&result)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request body."})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Unreadable request body."})
+		return
+	}
+
+	if result.WPM == 0 || result.Time == 0 || result.Accuracy == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Request body is missing fields."})
 		return
 	}
 
@@ -48,8 +48,9 @@ func QueueResult(c *gin.Context) {
 		return
 	}
 
-	obj := QueueObject{userID, jsonData}
-	body, err := json.Marshal(obj)
+	result.User, _ = strconv.Atoi(userID.(string))
+
+	body, err := json.Marshal(result)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to marshal request data."})
 		return
@@ -72,7 +73,7 @@ func QueueResult(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully added result to the queue."})
 
-	callLeaderboards(c, jsonData)
+	callLeaderboards(c, body)
 }
 
 func FetchResults(c *gin.Context) {

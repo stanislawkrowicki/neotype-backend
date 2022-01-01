@@ -6,7 +6,6 @@ import (
 	"log"
 	"neotype-backend/pkg/mysql"
 	"neotype-backend/pkg/users"
-	"strconv"
 	"time"
 )
 
@@ -28,36 +27,14 @@ func InitConsumer() {
 }
 
 func ConsumeResult(body []byte) {
-	var obj QueueObject
+	var result Result
 
-	err := json.Unmarshal(body, &obj)
+	err := json.Unmarshal(body, &result)
 	if err != nil {
 		log.Printf("Failed to unmarshal result! %s", err)
 		return
 	}
 
-	data := obj.Body
-	var result Result
-
-	err = json.Unmarshal(data, &result)
-	if err != nil {
-		log.Printf("Failed to unmarshal object body! %s", err)
-		return
-	}
-
-	userString, ok := obj.User.(string)
-	if !ok {
-		log.Printf("Failed to get user ID string")
-		return
-	}
-
-	userID, err := strconv.Atoi(userString)
-	if err != nil {
-		log.Printf("Failed to convert user ID string to int")
-		return
-	}
-
-	result.User = userID
 	result.CreatedAt = datatypes.Date(time.Now())
 
 	resp := db.Create(&result)
@@ -66,7 +43,7 @@ func ConsumeResult(body []byte) {
 	}
 
 	var user users.User
-	db.First(&user, "id = ?", userID)
+	db.First(&user, "id = ?", result.User)
 	user.TestsTaken++
 	user.AllTimeAvg = ((user.AllTimeAvg * float32(user.TestsTaken-1)) + result.WPM) / float32(user.TestsTaken)
 	db.Save(&user)
