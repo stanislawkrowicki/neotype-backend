@@ -1,6 +1,7 @@
 package users
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -8,6 +9,9 @@ import (
 	"github.com/joho/godotenv"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"io"
+	"log"
+	"neotype-backend/pkg/config"
 	"neotype-backend/pkg/mysql"
 	"net/http"
 	"os"
@@ -119,7 +123,7 @@ func Login(c *gin.Context) {
 }
 
 func Data(c *gin.Context) {
-	userID, err := Authorize(c)
+	userID, err := ShouldAuthorize(c)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": err})
 		return
@@ -145,7 +149,7 @@ func Data(c *gin.Context) {
 }
 
 func Username(c *gin.Context) {
-	userID, err := Authorize(c)
+	userID, err := ShouldAuthorize(c)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
 		return
@@ -162,8 +166,36 @@ func Username(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"username": user.Login})
 }
 
-func Authorize(c *gin.Context) (interface{}, error) {
-	// TODO: change this to be an api call
+func Authorize(c *gin.Context) {
+	providedToken := c.Param("token")
+	if providedToken == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Token is missing"})
+		return
+	}
+
+	token, err := jwt.Parse(providedToken, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+
+		return jwtKey, nil
+	})
+
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid token"})
+		return
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Token is broken."})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "OK", "iss": claims["iss"]})
+}
+
+func ShouldAuthorize(c *gin.Context) (interface{}, error) {
 	promptedTokens, ok := c.Request.Header["Authorization"]
 	if !ok {
 		return 0, fmt.Errorf("no auth method selected")
@@ -176,22 +208,38 @@ func Authorize(c *gin.Context) (interface{}, error) {
 	}
 
 	tokenString := parts[1]
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
 
-		return jwtKey, nil
-	})
-
+	serviceURI, err := config.GetBaseURL("users")
 	if err != nil {
-		return 0, fmt.Errorf("invalid token")
+		log.Println("Could not get users URI!")
+		return nil, err
 	}
 
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok || !token.Valid {
-		return 0, fmt.Errorf("failed to get claims")
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", serviceURI+"/authorize/"+tokenString, nil)
+	if err != nil {
+		log.Printf("Failed to create new http request to authorization: %s", err)
+		return nil, err
 	}
 
-	return claims["iss"], nil
+	response, err := client.Do(req)
+	if err != nil {
+		log.Printf("Got error while calling users. Is the service dead?")
+		return nil, fmt.Errorf("got error while calling users. Check if service is up")
+	}
+
+	var respBody gin.H
+
+	bytes, _ := io.ReadAll(response.Body)
+	if err = json.Unmarshal(bytes, &respBody); err != nil {
+		log.Printf("Failed to unmarshal response from authorization service!")
+		return nil, fmt.Errorf("failed to unmarshal response from authorization service")
+	}
+
+	defer func(Body io.ReadCloser) {
+		_ = Body.Close()
+	}(response.Body)
+
+	return respBody["iss"], nil
 }

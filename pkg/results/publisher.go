@@ -42,7 +42,7 @@ func QueueResult(c *gin.Context) {
 		return
 	}
 
-	userID, err := users.Authorize(c)
+	userID, err := users.ShouldAuthorize(c)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "User not logged in."})
 		return
@@ -90,7 +90,7 @@ func FetchResults(c *gin.Context) {
 		limit = limitInt
 	}
 
-	userID, err := users.Authorize(c)
+	userID, err := users.ShouldAuthorize(c)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
 		return

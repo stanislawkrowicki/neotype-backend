@@ -35,7 +35,7 @@ func Entry(c *gin.Context) {
 		return
 	}
 
-	userIDInterface, err := users.Authorize(c)
+	userIDInterface, err := users.ShouldAuthorize(c)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{})
 		return

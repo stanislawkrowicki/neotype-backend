@@ -16,6 +16,7 @@ func main() {
 	router.POST("/login", users.Login)
 	router.GET("/data", users.Data)
 	router.GET("/username", users.Username)
+	router.GET("/authorize/:token", users.Authorize)
 
 	port, err := config.GetPort("users")
 	if err != nil {
