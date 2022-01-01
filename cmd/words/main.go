@@ -12,7 +12,7 @@ func main() {
 
 	router.GET("/words/:count", words.GetRandomWords)
 
-	port, err := config.Get("words", "port")
+	port, err := config.GetPort("words")
 	if err != nil {
 		panic(err)
 	}

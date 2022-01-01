@@ -50,7 +50,7 @@ func main() {
 	router.GET("/leaderboards/:count", func(c *gin.Context) {
 		gateway.Proxy(c, "leaderboards", fmt.Sprintf("/leaderboards/%s", c.Param("count")))
 	})
-	port, err := config.Get("web-api", "port")
+	port, err := config.GetPort("web-api")
 	if err != nil {
 		panic(err)
 	}

@@ -12,6 +12,8 @@ const (
 	envKey             = "ENVIRONMENT"
 	configFolder       = "config"
 	defaultEnvironment = "local"
+	envProd            = "production"
+	envPort            = "PORT"
 )
 
 func Get(pkg, key string) (string, error) {
@@ -61,4 +63,18 @@ func GetBaseURL(pkg string) (string, error) {
 	}
 
 	return baseURL, nil
+}
+
+func GetPort(service string) (string, error) {
+	environment, exists := os.LookupEnv(envKey)
+	if !exists || environment != envProd {
+		return Get(service, "port")
+	}
+
+	port, exists := os.LookupEnv(envPort)
+	if !exists {
+		return "", fmt.Errorf("PORT variable not set, even though in production mode")
+	}
+
+	return port, nil
 }
