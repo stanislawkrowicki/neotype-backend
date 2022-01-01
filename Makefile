@@ -47,4 +47,7 @@ leaderboards-debug:
 #TESTS
 test:
 	go test ./tests/*
-	
+
+#DEPLOYMENT
+deploy:
+	sh ./deploy.sh
