@@ -61,7 +61,7 @@ func Register(c *gin.Context) {
 	}
 
 	if len(promptedUser.Password) < 8 || len(promptedUser.Login) > 32 {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Username should be between 8 and 32 characters"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Password should be between 8 and 32 characters"})
 		return
 	}
 
