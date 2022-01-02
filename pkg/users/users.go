@@ -65,6 +65,11 @@ func Register(c *gin.Context) {
 		return
 	}
 
+	if strings.Contains(promptedUser.Login, " ") || strings.Contains(promptedUser.Password, " ") {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "User and password can't contain spaces."})
+		return
+	}
+
 	selected := db.Where("login = ?", promptedUser.Login).First(&User{})
 	if selected.RowsAffected != 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "User already exists."})
@@ -254,6 +259,6 @@ func ShouldAuthorize(c *gin.Context) (interface{}, error) {
 	if respBody["iss"] == nil {
 		return nil, fmt.Errorf("no issuer in token")
 	}
-	
+
 	return respBody["iss"], nil
 }
