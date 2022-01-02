@@ -251,5 +251,9 @@ func ShouldAuthorize(c *gin.Context) (interface{}, error) {
 		_ = Body.Close()
 	}(response.Body)
 
+	if respBody["iss"] == nil {
+		return nil, fmt.Errorf("no issuer in token")
+	}
+	
 	return respBody["iss"], nil
 }
